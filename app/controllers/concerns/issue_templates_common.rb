@@ -109,7 +109,7 @@ module IssueTemplatesCommon
 
       if field == 'watcher_user_ids' && project_id.present?
         issue = Issue.new(tracker_id: tracker_id, project_id: project_id)
-        watchers = helpers.users_for_new_issue_watchers(issue)
+        watchers = users_for_new_issue_watchers_with_limit(issue, nil)
         value[:field_format] = 'list'
 
         value[:possible_values] = watchers.map { |user| "#{user.name} :#{user.id}" }
@@ -148,5 +148,22 @@ module IssueTemplatesCommon
   rescue StandardError => e
     logger&.info "core_fields_map_by_tracker_id failed due to this error: #{e.message}"
     {}
+  end
+
+  # https://github.com/redmine/redmine/blob/master/app/helpers/issues_helper.rb
+  # Returns an array of users that are proposed as watchers
+  # on the new issue form
+  def users_for_new_issue_watchers_with_limit(issue, limit = 21)
+    users = issue.watcher_users.select{|u| u.status == User::STATUS_ACTIVE}
+    if limit.present?
+      assignable_watchers = issue.project.principals.assignable_watchers.limit(limit)
+      if assignable_watchers.size < limit
+        users += assignable_watchers.sort
+      end
+    else
+      assignable_watchers = issue.project.principals.assignable_watchers
+      users += assignable_watchers.sort
+    end
+    users.uniq
   end
 end
