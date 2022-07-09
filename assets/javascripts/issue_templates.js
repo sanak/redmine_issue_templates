@@ -423,12 +423,49 @@ ISSUE_TEMPLATE.prototype = {
     document.getElementById('issue_template').dispatchEvent(changeEvent)
   },
   checkSelectedWatchers: function (values) {
-    let targets = document.querySelectorAll('input[name="issue[watcher_user_ids][]"]')
-    for (let i = 0; i < targets.length; i++) {
-      let target = targets[i]
-      if (values.includes(target.value)) {
-        target.checked = true
+    let targets = document.querySelectorAll('input[type="checkbox"][name="issue[watcher_user_ids][]"]')
+    if (targets.length > 0) {
+      for (let i = 0; i < targets.length; i++) {
+        let target = targets[i]
+        if (values.includes(target.value)) {
+          target.checked = true
+        }
       }
+    } else {
+      let observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (!mutation.addedNodes) return
+
+          for (let i = 0; i < mutation.addedNodes.length; i++) {
+            let node = mutation.addedNodes[i]
+            console.log(node)
+            if (node.id === 'new-watcher-form') {
+              observer.disconnect()
+
+              // Check watchers from template setting
+              let searchTargets = document.querySelectorAll('div#users_for_watcher input[name="watcher[user_ids][]"]')
+              for (let i = 0; i < searchTargets.length; i++) {
+                let target = searchTargets[i]
+                if (values.includes(target.value)) {
+                  target.checked = true
+                }
+              }
+              // Click "Add" button to apply checked watchers and close the dialog
+              document.querySelector('form#new-watcher-form input[type="submit"]').click()
+            }
+          }
+        })
+      })
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: false,
+        characterData: false
+      })
+
+      // Click "Search for watchers to add" link to open "Add watchers" dialog
+      document.querySelector('span.search_for_watchers a').click()
     }
   },
   filterTemplate: function (event) {
