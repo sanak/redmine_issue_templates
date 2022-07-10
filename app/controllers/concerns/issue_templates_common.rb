@@ -155,13 +155,8 @@ module IssueTemplatesCommon
   # on the new issue form
   def users_for_new_issue_watchers_with_limit(issue, limit = 21)
     users = issue.watcher_users.select{|u| u.status == User::STATUS_ACTIVE}
-    if limit.present?
-      assignable_watchers = issue.project.principals.assignable_watchers.limit(limit)
-      if assignable_watchers.size < limit
-        users += assignable_watchers.sort
-      end
-    else
-      assignable_watchers = issue.project.principals.assignable_watchers
+    assignable_watchers = issue.project.principals.assignable_watchers.limit(limit)
+    if limit.nil? || assignable_watchers.size < limit
       users += assignable_watchers.sort
     end
     users.uniq
