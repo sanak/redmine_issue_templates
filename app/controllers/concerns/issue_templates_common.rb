@@ -108,8 +108,12 @@ module IssueTemplatesCommon
       end
 
       if field == 'watcher_user_ids' && project_id.present?
-        issue = Issue.new(tracker_id: tracker_id, project_id: project_id)
-        watchers = helpers.users_for_new_issue_watchers(issue)
+        project_principals = if Watcher.reflections['user'].class_name == 'Principal'
+                               Project.find(project_id).principals.where(type: %w[User Group])
+                             else # Redmine 4.1.x or earlier
+                               Project.find(project_id).users
+                             end
+        watchers = project_principals.active.visible.sort
         value[:field_format] = 'list'
 
         value[:possible_values] = watchers.map { |user| "#{user.name} :#{user.id}" }
