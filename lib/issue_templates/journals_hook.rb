@@ -36,14 +36,14 @@ module IssueTemplates
       (tracker_id, project_id) = tracker_project_ids(context, tracker_id)
       NoteTemplate.visible_note_templates_condition(
         user_id: User.current.id, project_id: project_id, tracker_id: tracker_id
-      )
+      ).sorted
     end
 
     def global_note_templates(context, tracker_id)
       (tracker_id, project_id) = tracker_project_ids(context, tracker_id)
       GlobalNoteTemplate.visible_note_templates_condition(
         user_id: User.current.id, project_id: project_id, tracker_id: tracker_id
-      )
+      ).sorted
     end
 
     def tracker_project_ids(context, tracker_id)
