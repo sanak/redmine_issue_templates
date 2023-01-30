@@ -59,6 +59,32 @@ jobs:
       - redmine-plugin/bundle-install
       - redmine-plugin/migrate-without-plugins
       - plugin-test/run-tests
+  rspec:
+    parameters:
+      redmine_version:
+        type: string
+      ruby_version:
+        type: string
+        default: '2.7'
+      db:
+        type: enum
+        enum: ['mysql', 'pg']
+        default: pg
+      db_version:
+        type: string
+        default: 'latest-ram'
+    executor:
+      name: redmine-plugin/ruby-<< parameters.db >>
+      ruby_version: << parameters.ruby_version >>
+      db_version: << parameters.db_version >>
+    steps:
+      - checkout
+      - redmine-plugin/download-redmine:
+          version: << parameters.redmine_version >>
+      - redmine-plugin/install-self
+      - redmine-plugin/generate-database_yml
+      - redmine-plugin/bundle-install
+      - redmine-plugin/rspec
 workflows:
   run-tests-workflow:
     jobs:
@@ -72,3 +98,14 @@ workflows:
             database: mysql
             ruby_version: '2.6'
             redmine_version: '4.2.9'
+        - rspec:
+            name: RSpec on newest versions with PostgreSQL
+            redmine_version: latest
+            ruby_version: '2.7'
+            db: pg
+        - rspec:
+            name: RSpec on oldest versions with MySQL
+            redmine_version: '4.0.9'
+            ruby_version: '2.6'
+            db: mysql
+            db_version: '5.7-ram'
