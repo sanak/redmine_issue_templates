@@ -2,7 +2,6 @@
 
 class GlobalNoteTemplate < ActiveRecord::Base
   include Redmine::SafeAttributes
-  include ActiveModel::Validations
 
   # author and project should be stable.
   safe_attributes 'name',
@@ -28,6 +27,7 @@ class GlobalNoteTemplate < ActiveRecord::Base
 
   validates :name, presence: true
   validates :tracker, presence: true
+  validates :description, presence: true
   acts_as_positioned scope: %i[tracker_id]
 
   enum visibility: { roles: 1, open: 2 }

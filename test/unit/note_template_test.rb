@@ -44,18 +44,18 @@ class NoteTemplateTest < ActiveSupport::TestCase
   def test_visibility_with_success
     a = NoteTemplate.create(name: 'Template1', position: 2, project_id: 1, tracker_id: 1,
                             visibility: 'roles', role_ids: [Role.first.id])
-    assert_equal 1, a.visibility_before_type_cast
+    assert_equal 1, NoteTemplate.visibilities[a.visibility]
 
     a.visibility = 'mine'
     a.save
-    assert_equal 0, a.visibility_before_type_cast
+    assert_equal 0, NoteTemplate.visibilities[a.visibility]
   end
 
   def test_visibility_without_role_ids
     # When enable validation: Raise ActiveRecord::RecordInvalid
     e = assert_raises ActiveRecord::RecordInvalid do
       NoteTemplate.create!(name: 'Template1', position: 2, project_id: 1, tracker_id: 1,
-                           visibility: 'roles')
+                           visibility: 'roles', description: 'description1')
     end
 
     # Check error message.
@@ -77,13 +77,32 @@ class NoteTemplateTest < ActiveSupport::TestCase
   end
 
   def test_create_should_require_tracker
-    template = NoteTemplate.new(name: 'NoteTemplate1', project_id: 1, visibility: 'open')
+    template = NoteTemplate.new(name: 'NoteTemplate1', project_id: 1, visibility: 'open', description: 'description1')
     assert_no_difference 'NoteTemplate.count' do
       assert_raises ActiveRecord::RecordInvalid do
         template.save!
       end
     end
     assert_equal ['Tracker cannot be blank'], template.errors.full_messages
+  end
+
+  def test_required_attributes_should_be_validated
+    template = NoteTemplate.find(1)
+    {
+      project_id: nil,
+      name: ' ',
+      tracker: nil,
+      description: " \n\n ",
+    }.each do |attr, val|
+      template.reload
+      template.__send__("#{attr}=", val)
+
+      assert_raises ActiveRecord::RecordInvalid do
+        template.save!
+      end
+
+      assert_includes template.errors[attr], 'cannot be blank'
+    end
   end
 
   def test_loadable_with_admin_user
