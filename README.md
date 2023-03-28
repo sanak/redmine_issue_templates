@@ -6,8 +6,9 @@
 Plugin to generate and use issue templates for each project to assist issue
 creation.
 
-The latest version 1.0.x **is not compatible with IE11**. (Related: #310)
-Please use version 0.3.8 or **[0.3-stable](https://github.com/akiko-pusu/redmine_issue_templates/tree/0.3-stable) branch** (uing jQuery version) as a stable release for Redmine4.x.
+## Supported browsers
+
+The current version of Chrome, Firefox, and Microsoft Edge (Chromium version).
 
 ## Useful links
 
