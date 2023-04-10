@@ -23,4 +23,13 @@ describe GlobalNoteTemplate do
       expect(GlobalNoteTemplate.sorted).to eq [note_template2, note_template3, note_template]
     end
   end
+
+  it 'can be deleted even though some projects bound' do
+    note_template_with_project = create(:global_note_template, tracker_id: tracker.id, position: 4, enabled: false)
+    note_template_with_project.projects << create(:project) << create(:project) << create(:project)
+
+    expect(GlobalNoteTemplate.where(id: note_template_with_project.id)).not_to be_empty
+    note_template_with_project.destroy
+    expect(GlobalNoteTemplate.where(id: note_template_with_project.id)).to be_empty
+  end
 end

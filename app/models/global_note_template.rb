@@ -2,6 +2,7 @@
 
 class GlobalNoteTemplate < ActiveRecord::Base
   include Redmine::SafeAttributes
+  include AttributeNameMapper
 
   # author and project should be stable.
   safe_attributes 'name',
@@ -19,8 +20,7 @@ class GlobalNoteTemplate < ActiveRecord::Base
   belongs_to :author, class_name: 'User', inverse_of: false, foreign_key: 'author_id'
   belongs_to :tracker
 
-  has_many :global_note_template_projects, dependent: :nullify
-  has_many :projects, through: :global_note_template_projects
+  has_and_belongs_to_many :projects
 
   has_many :global_note_visible_roles, dependent: :nullify
   has_many :roles, through: :global_note_visible_roles
@@ -131,7 +131,7 @@ class GlobalNoteTemplate < ActiveRecord::Base
 
       # return uniq ids
       ids = open_ids | role_ids
-      GlobalNoteTemplate.where(id: ids).includes(:global_note_visible_roles)
+      GlobalNoteTemplate.where(id: ids).enabled.includes(:global_note_visible_roles)
     end
 
     def get_templates_for_project_tracker(project_id, tracker_id = nil)
@@ -147,6 +147,14 @@ class GlobalNoteTemplate < ActiveRecord::Base
 
     def apply_all_projects?
       plugin_setting['apply_global_template_to_all_projects'].to_s == 'true'
+    end
+
+    def attribute_map
+      {
+        description: :label_comment,
+        name: :issue_template_name,
+        role_ids: :field_template_visibility,
+      }
     end
   end
 end
