@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  redmine-plugin: agileware-jp/redmine-plugin@2.3.0
+  redmine-plugin: agileware-jp/redmine-plugin@3.1.0
   plugin-test:
     commands:
       run-tests:
@@ -65,14 +65,11 @@ jobs:
         type: string
       ruby_version:
         type: string
-        default: '2.7'
       db:
         type: enum
         enum: ['mysql', 'pg']
-        default: pg
       db_version:
         type: string
-        default: 'latest-ram'
     executor:
       name: redmine-plugin/ruby-<< parameters.db >>
       ruby_version: << parameters.ruby_version >>
@@ -85,27 +82,37 @@ jobs:
       - redmine-plugin/generate-database_yml
       - redmine-plugin/bundle-install
       - redmine-plugin/rspec
+
+default_context: &default_context
+  context:
+    - lychee-ci-environment
+
 workflows:
   run-tests-workflow:
     jobs:
         - run-tests:
-            name: test on newest versions with PostgreSQL
+            <<: *default_context
+            name: test on supported maximum versions with PostgreSQ
+            redmine_version: $REDMINE_MAX_VERSION
+            ruby_version: $RUBY_MAX_VERSION
             database: pg
-            ruby_version: '2.7'
-            redmine_version: 'latest'
         - run-tests:
-            name: test on oldest versions with MySQL
+            <<: *default_context
+            name: test on supported minimum versions with MySQL
+            redmine_version: $REDMINE_MIN_VERSION
+            ruby_version: $RUBY_MIN_VERSION
             database: mysql
-            ruby_version: '2.6'
-            redmine_version: '4.2.9'
         - rspec:
-            name: RSpec on newest versions with PostgreSQL
-            redmine_version: latest
-            ruby_version: '2.7'
+            <<: *default_context
+            name: RSpec on supported maximum versions with PostgreSQL
+            redmine_version: $REDMINE_MAX_VERSION
+            ruby_version: $RUBY_MAX_VERSION
             db: pg
+            db_version: $POSTGRES_VERSION
         - rspec:
-            name: RSpec on oldest versions with MySQL
-            redmine_version: '4.2.9'
-            ruby_version: '2.6'
+            <<: *default_context
+            name: RSpec on supported minimum versions with MySQL
+            redmine_version: $REDMINE_MIN_VERSION
+            ruby_version: $RUBY_MIN_VERSION
             db: mysql
-            db_version: '5.7-ram'
+            db_version: $MYSQL_VERSION
