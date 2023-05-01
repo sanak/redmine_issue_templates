@@ -31,7 +31,9 @@ feature 'Templates can be reorder via drag and drop', js: true do
 
     # change id: 1, 2, 3, 4 to 4, 1, 2, 3
     expect do
-      first_target.drag_to(last_target)
+      Redmine::VERSION::STRING < '4.2' ?
+        page.driver.browser.action.drag_and_drop_by(first_target.native, 0, 90).perform :
+        first_target.drag_to(last_target)
       wait_for_ajax
     end.to change {
              IssueTemplate.order(:id).pluck(:position).to_a
@@ -42,7 +44,9 @@ feature 'Templates can be reorder via drag and drop', js: true do
     last_target = table.find('tr:nth-child(4) > td.buttons > span')
 
     expect do
-      second_target.drag_to(last_target)
+      Redmine::VERSION::STRING < '4.2' ?
+        page.driver.browser.action.drag_and_drop_by(second_target.native, 0, 60).perform :
+        second_target.drag_to(last_target)
       wait_for_ajax
     end.to change {
              IssueTemplate.order(:id).pluck(:position).to_a
@@ -66,7 +70,9 @@ feature 'Templates can be reorder via drag and drop', js: true do
       #--------------------------------------------
       # change position: 1, 2, 3, 4 to 4, 1, 2, 3
       expect do
-        first_target.drag_to(last_target)
+        Redmine::VERSION::STRING < '4.2' ?
+          page.driver.browser.action.drag_and_drop_by(first_target.native, 0, 90).perform :
+          first_target.drag_to(last_target)
         wait_for_ajax
       end.to change {
                NoteTemplate.reorder(:id).pluck(:position).to_a
@@ -79,7 +85,9 @@ feature 'Templates can be reorder via drag and drop', js: true do
       last_target = table.find('tr:nth-child(4) > td.buttons > span')
 
       expect do
-        second_target.drag_to(last_target)
+        Redmine::VERSION::STRING < '4.2' ?
+          page.driver.browser.action.drag_and_drop_by(second_target.native, 0, 60).perform :
+          second_target.drag_to(last_target)
         wait_for_ajax
       end.to change {
                NoteTemplate.reorder(:id).pluck(:position).to_a
@@ -109,7 +117,9 @@ feature 'Templates can be reorder via drag and drop', js: true do
           first_target = table.find("tr:nth-child(#{tr_idx.first}) > td.buttons > span")
           last_target = table.find("tr:nth-child(#{tr_idx.last}) > td.buttons > span")
 
-          first_target.drag_to(last_target)
+          Redmine::VERSION::STRING < '4.2' ?
+            page.driver.browser.action.drag_and_drop_by(first_target.native, 0, 30).perform :
+            first_target.drag_to(last_target)
           wait_for_ajax
           tr_idx.reverse!
         end
@@ -135,7 +145,9 @@ feature 'Templates can be reorder via drag and drop', js: true do
 
     # change id: 1, 2, 3, 4 to 4, 1, 2, 3
     expect do
-      first_target.drag_to(last_target)
+      Redmine::VERSION::STRING < '4.2' ?
+        page.driver.browser.action.drag_and_drop_by(first_target.native, 0, 90).perform :
+        first_target.drag_to(last_target)
       wait_for_ajax
     end.to change {
              GlobalIssueTemplate.reorder(:id).pluck(:position).to_a
@@ -146,7 +158,9 @@ feature 'Templates can be reorder via drag and drop', js: true do
     last_target = table.find('tr:nth-child(4) > td.buttons > span')
 
     expect do
-      second_target.drag_to(last_target)
+      Redmine::VERSION::STRING < '4.2' ?
+        page.driver.browser.action.drag_and_drop_by(second_target.native, 0, 60).perform :
+        second_target.drag_to(last_target)
       wait_for_ajax
     end.to change {
              GlobalIssueTemplate.reorder(:id).pluck(:position).to_a
