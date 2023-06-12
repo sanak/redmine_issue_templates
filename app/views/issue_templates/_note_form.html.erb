@@ -28,8 +28,7 @@
   </div>
 </div>
 
-
-<script type='text/javascript'>
+<script type='module'>
   var noteTemplateConfig = {
     baseElementId: '<%= element_id %>',
     baseTemplateListUrl: '<%= url_for(controller: 'note_templates', action:'list_templates') %>',
@@ -49,5 +48,5 @@
     element.insertBefore(content[0], element.firstChild)
   }
 
-  var noteTemplateNS = noteTemplateNS || new NOTE_TEMPLATE(noteTemplateConfig)
+  window.noteTemplateNS ||= new NOTE_TEMPLATE(noteTemplateConfig)
 </script>
