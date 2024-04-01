@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class NoteTemplate < ActiveRecord::Base
+class NoteTemplate < (defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base)
   include Redmine::SafeAttributes
   include AttributeNameMapper
 

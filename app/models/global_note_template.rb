@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class GlobalNoteTemplate < ActiveRecord::Base
+class GlobalNoteTemplate < (defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base)
   include Redmine::SafeAttributes
   include AttributeNameMapper
 
