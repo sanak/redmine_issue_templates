@@ -1,4 +1,4 @@
-class IssueTemplateSetting < ActiveRecord::Base
+class IssueTemplateSetting < (defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base)
   include Redmine::SafeAttributes
   belongs_to :project
 

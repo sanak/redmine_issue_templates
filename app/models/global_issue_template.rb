@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class GlobalIssueTemplate < ActiveRecord::Base
+class GlobalIssueTemplate < (defined?(ApplicationRecord) == 'constant' ? ApplicationRecord : ActiveRecord::Base)
   include Redmine::SafeAttributes
   include IssueTemplateCommon
   include AttributeNameMapper
